@@ -8,11 +8,8 @@ import Expo from 'expo';
 const modules = {
   'player-sprite': require('./calhacksbear.png'),
   'start-screen': require('./title.png'),
-  'flowers': require('./flowers.png'),
   'dirt': require('./dirt.jpg'),
-  'berkeley': require('./berkeley.jpg'),
-  'stanfurd': require('./stanfordtree.png'),
-  'dirks': require('./dirks.png')
+  'berkeley': require('./berkeley.jpg')
 };
 
 // Export map of asset names to `Expo.Asset` objects.

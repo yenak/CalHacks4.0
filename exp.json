@@ -5,7 +5,7 @@
   "icon": "./Assets/calhacksbear.png",
   "sdkVersion": "17.0.0",
   "version": "1.0.0",
-  "orientation": "landscape",
+  "orientation": "portrait",
   "primaryColor": "#cccccc",
   "notification": {
     "color": "#000000"

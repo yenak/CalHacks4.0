@@ -20,11 +20,6 @@ const THREE = require('three');
 // `'three'` npm package.
 const THREEView = Expo.createTHREEViewClass(THREE);
 
-const stanfurd = 0;
-
-const onGround = false;
-
-
 //// Game
 
 // Render the game as a `View` component.
@@ -75,12 +70,23 @@ export default class Game extends React.Component {
     this.setState({ started: false, scoreCount: 0 });
     this.animatingIds = [];
     this.velocity = -1;
-    this.bearMesh = Meshes.createPlane(THREEView);
+    this.bearMesh = Meshes.createBear(THREEView);
+    this.bearMesh.position.y = this.height / 2 + 1;
+    this.bearMesh.position.x = 0;
     this.startScreen = Meshes.createStart(THREEView);
     this.background = Meshes.createBackground(THREEView, this.width, this.height);
+    this.platform = Meshes.createGround(THREEView);
+    this.platform.position.y = this.height / 2 * -1 + 1;
+    this.platform.position.x = 0;
+    this.currPlatformHeight = this.height / 2 - 1.5;
+    this.ground = this.platform;
+    this.startScreen.position.z = 1;
+    this.scene.add(this.platform);
     this.scene.add(this.startScreen);
     this.scene.add(this.bearMesh);
     this.scene.add(this.background);
+    this.onPlatform = false;
+    this.updateFrame = 0;
   };
 
   // Resets the game back to the original state with the start menu
@@ -95,68 +101,12 @@ export default class Game extends React.Component {
   // Starts the game when user touches to start
   startGame = () => {
     this.setState({ started: true });
-    this.createSetOfPillars();
-    this.pillarInterval = setInterval(() => {
-      this.createSetOfPillars();
-    }, 3000);
+    // this.createPlatform();
+    // this.platformInterval = setInterval(() => {
+    //   this.createSetOfPlatforms();
+    // }, 3000);
     this.scene.remove(this.startScreen);
   };
-  //// Events
-
-  // Creates a new set of pillars with random height, adds them to the scene
-  createSetOfPillars = () => {
-    const ground = Meshes.createFlowers(THREEView);
-    ground.position.y = -3.5;
-    ground.position.name = 'ground';
-    this.scene.add(ground);
-    this.animatingIds.push(ground.id);
-    const pillarTop = Meshes.createStanfurd(THREEView);
-    const pillarBottom = Meshes.createStanfurd(THREEView);
-    const rand = 4 - Math.random() * 2;
-    pillarTop.position.y = rand;
-    pillarBottom.position.y = rand - 7.3;
-    pillarTop.name = 'top';
-    pillarBottom.name = 'bottom';
-    pillarTop.passed = false;
-    pillarBottom.passed = false;
-    this.scene.add(pillarTop);
-    this.scene.add(pillarBottom);
-    this.animatingIds.push(pillarTop.id);
-    this.animatingIds.push(pillarBottom.id);
-  };
-
-  // Moves to pillar toward the left. Also handles collisions with plane
-  animatePillar = (id, dt) => {
-    const object = this.scene.getObjectById(id);
-    if (!object) {
-      return;
-    }
-
-    // Checks if plane passes pillar to increment score
-    if (
-      Math.round(object.position.x, -5) == 0 &&
-      !object.passed &&
-      object.name == 'top'
-    ) {
-      this.setState({ scoreCount: this.state.scoreCount + 1 });
-      object.passed = true;
-    }
-
-    // Checks for collision of pillar and plane
-    if (this.intersects(object, this.bearMesh)) {
-      this.scene.remove(object);
-        alert('lol stanfurd sucks');
-      // this.resetScene();
-    } else if (object.position.x < -2.5) {
-      // If pillar is off the screen, remove from scene
-      this.animatingIds.splice(this.animatingIds.indexOf(id), 1);
-      this.scene.remove(object);
-    } else {
-      // Move pillar to the left
-      object.position.x -= 0.02;
-    }
-  };
-
   // Check if two objects are intersecting in any axis
   intersects = (target, candidate) => {
     const a = new THREE.Box3().setFromObject(target);
@@ -170,27 +120,27 @@ export default class Game extends React.Component {
   // elapsed since the last call.
   tick = dt => {
     if (this.state.started) {
-      if (
-        this.bearMesh.position.y < this.height / 2 * -1 + 1 
-        // this.bearMesh.position.y > this.height / 2
-      ) {
-        // this.bearMesh.translateY(0);
-        this.velocity = 2;
-        // onGround = true;
-        // alert('You Lost!');
-        // this.resetScene();
-      } else {
+        if (!this.onPlatform) {
         this.velocity -= 7 * dt;
+        this.bearMesh.position.y = this.bearMesh.position.y + this.velocity * dt;
       }
-      if (this.velocity * dt < this.height / 2 * -1 + 1) {
-        this.bearMesh.translateY(this.height / 2 * -1 + 1);
-      } else {
-        this.bearMesh.translateY(this.velocity * dt);
+      if (this.intersects(this.ground, this.bearMesh)) {
+        if (this.updateFrame == 0) {
+          this.updateFrame = 60;
+        }
+        this.updateFrame--;
+        this.bearMesh.translateY((this.height - 2.4)/60);
+        this.ground.translateY((this.height - 2.5)/60);
+        this.velocity = 0;
+        if (this.updateFrame == 0) {
+          this.onPlatform = true;
+          var ground = Meshes.createGround(THREEView);
+          ground.position.y = this.height / 2 * -1 + 1;
+          ground.position.x = Math.random() * this.width - this.width / 2;
+          this.scene.add(ground);
+          this.ground = ground;
+        }
       }
-        this.animatingIds.forEach(id => {
-          this.animatePillar(id, dt);
-        });
-      // }
     }
   };
 
@@ -198,8 +148,12 @@ export default class Game extends React.Component {
   touch = (_, gesture) => {
     if (this.state.started) {
       // Increase velocity to make plane go up
-      this.bearMesh.position.y += 0.05;
-      this.velocity = 4;
+      if (this.bearMesh.position.y < this.height / 2 * -1 + 0.125) {
+        this.tapped = true;
+      } else {
+        this.tapped = false;
+      }
+
     } else {
       this.startGame();
     }

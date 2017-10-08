@@ -32,28 +32,19 @@ const loadImageMaterial = (assetName, THREEView) => {
   return material;
 };
 
-export const createFlowers = THREEView => {
-  const geometry = new THREE.PlaneBufferGeometry(5, 1);
+export const createGround = THREEView => {
+  const geometry = new THREE.PlaneBufferGeometry(1.5, 0.2);
   const material = loadImageMaterial('dirt', THREEView);
   const mesh = new THREE.Mesh(geometry, material);
-  mesh.position.x = 2.5;
   return mesh;
 };
 
-export const createStanfurd = THREEView => {
-  const geometry = new THREE.PlaneBufferGeometry(1, 3);
-  const material = loadImageMaterial('stanfurd', THREEView);
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.position.x = 2.5
-  return mesh;
-};
-
-// Creates a new plane and returns the mesh
-export const createPlane = THREEView => {
-  const planeGeo = new THREE.PlaneBufferGeometry(0.25, 0.25);
+// Creates a new bear and returns the mesh
+export const createBear = THREEView => {
+  const bearGeo = new THREE.PlaneBufferGeometry(0.5, 0.5);
   const material = loadImageMaterial('player-sprite', THREEView);
-  const planeMesh = new THREE.Mesh(planeGeo, material);
-  return planeMesh;
+  const bearMesh = new THREE.Mesh(bearGeo, material);
+  return bearMesh;
 };
 
 // Creates the start graphic and returns the mesh
