@@ -11,6 +11,7 @@
     "react": "16.0.0-alpha.6",
     "react-native": "expo/react-native#sdk-17",
     "react-native-orientation": "^3.1.0",
+    "react-native-svg": "^6.0.0-rc1",
     "three": "^0.85.2"
   }
 }

@@ -1,7 +1,7 @@
 {
-  "name": "CalHacks4.0",
+  "name": "The Legend of Berkeley",
   "description": "Project for CalHacks4.0",
-  "slug": "calhacks",
+  "slug": "thelegendofberkeley",
   "icon": "./Assets/calhacksbear.png",
   "sdkVersion": "17.0.0",
   "version": "1.0.0",
