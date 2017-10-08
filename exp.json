@@ -1,8 +1,8 @@
 {
-  "name": "FloatyPlane-GL",
-  "description": "Recreating flappy bird with Expo and Three",
-  "slug": "floatyplane-gl",
-  "icon": "./Assets/floaty.png",
+  "name": "CalHacks4.0",
+  "description": "Project for CalHacks4.0",
+  "slug": "calhacks",
+  "icon": "./Assets/calhacksbear.png",
   "sdkVersion": "17.0.0",
   "version": "1.0.0",
   "orientation": "landscape",
